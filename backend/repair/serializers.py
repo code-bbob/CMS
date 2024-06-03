@@ -1,10 +1,6 @@
 from rest_framework import serializers
-from .models import Repair,Enterprise
+from .models import Repair
 
-class EnterpriseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Enterprise
-        fields = '__all__'
 
 
 class AdminRepairSerializer(serializers.ModelSerializer):

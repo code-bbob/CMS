@@ -1,5 +1,6 @@
 from django.db import models
 import uuid
+from enterprise.models import Enterprise
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser,PermissionsMixin
 # Create your models here.
 
@@ -44,8 +45,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
-    dp = models.ImageField(upload_to='user/images', default='', null=True,blank=True)
-    bio = models.CharField(max_length=100, default='', null=True,blank=True)
+    enterprise = models.ForeignKey(Enterprise, related_name='users', on_delete=models.CASCADE, null=True, blank=True)
 
       # Include groups if needed
     groups = models.ManyToManyField(

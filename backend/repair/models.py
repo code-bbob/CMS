@@ -2,7 +2,6 @@ from django.db import models
 from datetime import datetime
 import random
 import string
-from userauth.models import User
 # Create your models here.
 
 
@@ -76,11 +75,3 @@ class Repair(models.Model):
         return f"{self.phone_model} by {self.customer_name}"
     
 
-
-class Enterprise(models.Model):
-    name = models.CharField(max_length=40)
-    users = models.ManyToManyField(User, related_name="enterprise",blank=True)
-    repairs = models.ManyToManyField(Repair, related_name="enterprise_repairs", blank=True)#related name uta reverse relation query ma pani use hunxa 
-    
-    def __str__(self):
-        return self.name
