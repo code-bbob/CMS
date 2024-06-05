@@ -67,8 +67,17 @@ class Repair(models.Model):
                 self.my_profit = self.repair_profit
                 self.technician_profit = 0
             else:
-                self.technician_profit = (40 / 100) * self.repair_profit
-                self.my_profit = (60 / 100) * self.repair_profit
+                
+                enterprises = self.enterprise_repairs.all()
+                if not enterprises:
+                    self.technician_profit = 0
+                    self.my_profit = self.repair_profit  # Or any other default value
+                else:
+                    enterprise = enterprises.first()  # Get the first related enterprise, adjust as needed
+                    self.technician_profit = (enterprise.technician_profit / 100) * self.repair_profit
+                    self.my_profit = ((100 - enterprise.technician_profit) / 100) * self.repair_profit
+                # self.technician_profit = (self.enterprise.technician_profit / 100) * self.repair_profit
+                # self.my_profit = ((100-self.enterprise.technician_profit) / 100) * self.repair_profit
         super(Repair, self).save(*args, **kwargs)
 
     def generate_unique_repair_id(self,length=8):
