@@ -2,6 +2,8 @@ from django.db import models
 from datetime import datetime
 import random
 import string
+# from django.conf import settings
+
 # Create your models here.
 
 
@@ -39,7 +41,8 @@ class Repair(models.Model):
     due = models.IntegerField()
     received_date = models.DateField(default=datetime.now)
     received_by = models.CharField(max_length=30)
-    repaired_by = models.CharField(max_length=30,null=True, blank=True)
+    repaired_by = models.ForeignKey('enterprise.Person', limit_choices_to={'role': 'Technician'}, null=True, blank=True, on_delete=models.SET_NULL)
+    outside_repair = models.BooleanField(default=False)
     delivery_date = models.DateField(default=datetime.now)
     repair_status=models.CharField(max_length=20,choices=status_choices,default="Not repaired")
     amount_paid = models.FloatField(null=True,blank=True)
@@ -60,8 +63,12 @@ class Repair(models.Model):
             self.amount_paid = self.amount_paid + self.advance_paid
         if self.repair_status=="Completed" and self.amount_paid is not None and self.repair_cost_price is not None:
             self.repair_profit = self.amount_paid - self.repair_cost_price
-            self.technician_profit = (40/100) * self.repair_profit
-            self.my_profit = (60/100) * self.repair_profit
+            if self.outside_repair:
+                self.my_profit = self.repair_profit
+                self.technician_profit = 0
+            else:
+                self.technician_profit = (40 / 100) * self.repair_profit
+                self.my_profit = (60 / 100) * self.repair_profit
         super(Repair, self).save(*args, **kwargs)
 
     def generate_unique_repair_id(self,length=8):

@@ -11,8 +11,7 @@ class AdminRepairSerializer(serializers.ModelSerializer):
 class TechnicianRepairSerializer(serializers.ModelSerializer):
     class Meta:
         model = Repair
-        fields = ['repair_id','customer_name','technician_profit']
-
+        fields = '__all__'
 class StaffRepairSerializer(serializers.ModelSerializer):
     class Meta:
         model = Repair

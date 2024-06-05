@@ -14,10 +14,12 @@ class RepairView(APIView):
     def get(self,request):
         search = request.GET.get('search')
         user = request.user
-        enterprise = user.enterprise
+        enterprise = user.person.enterprise
         start_date = request.GET.get('start_date')
         end_date = request.GET.get('end_date')
         repairs = Repair.objects.filter(enterprise_repairs__name=enterprise)
+        # repairs = Repair.objects.filter(repaired_by__enterprise=enterprise)  # Corrected filtering based on user's enterprise
+        print(repairs)
         if start_date and end_date:
             start_date = parse_date(start_date)
             end_date = parse_date(end_date)
@@ -39,7 +41,7 @@ class RepairView(APIView):
 
         if status == "Admin":
             serializer = AdminRepairSerializer(repairs,many=True)
-        elif status == "Technicians":
+        elif status == "Technician":
             serializer = TechnicianRepairSerializer(repairs,many=True)
         else:
             serializer = StaffRepairSerializer(repairs,many=True)
@@ -50,7 +52,7 @@ class RepairView(APIView):
         serializer = AdminRepairSerializer(data=data)
         if serializer.is_valid(raise_exception=True):
             user = request.user
-            enterprise = user.enterprise
+            enterprise = user.person.enterprise
             obj = serializer.save()     #ALWAYS REMEMBER U FIRST NEED IT TO BE SAVED TO ADD
             enterprise.repairs.add(obj)
             return Response({"msg":"Successful"})
